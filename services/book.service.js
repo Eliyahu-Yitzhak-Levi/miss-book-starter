@@ -1,7 +1,7 @@
 import { utilService } from './util.service.js'
 import { storageService } from './async-storage.service.js'
 
-const BOOK_KEY = 'bookDB'
+const BOOK_KEY = 'booksDB'
 _createBooks()
 
 export const bookService = {
@@ -18,6 +18,7 @@ export const bookService = {
 // window.bs = bookService
 
 function query(filterBy = {}) {
+    console.log(storageService.query(BOOK_KEY));
     return storageService.query(BOOK_KEY)
         .then(books => {
             if (filterBy.txt) {
@@ -86,23 +87,40 @@ function getCategoryStats() {
 }
 
 function _createBooks() {
-    let books = utilService.loadFromStorage(BOOK_KEY)
-    if (!books || !books.length) {
-        books = []
-        const categories = ['fiction', 'non-fiction', 'biography', 'history']
-        for (let i = 0; i < 6; i++) {
-            const category = categories[utilService.getRandomIntInclusive(0, categories.length - 1)]
-            books.push(_createBook(category, utilService.getRandomIntInclusive(10, 100)))
-        }
+    const categories = ['Love', 'Fiction', 'Poetry', 'Computers', 'Religion'];
+    const books = [];
+
+    for (let i = 0; i < 3; i++) { //makes 3 books
+        const book = {
+            id: utilService.makeId(),
+            title: utilService.makeLorem(2),
+            subtitle: utilService.makeLorem(4),
+            authors: [utilService.makeLorem(1)],
+            publishedDate: utilService.getRandomIntInclusive(1950, 2024),
+            description: utilService.makeLorem(20),
+            pageCount: utilService.getRandomIntInclusive(20, 600),
+            categories: [categories[utilService.getRandomIntInclusive(0, categories.length - 1)]],
+            thumbnail: `http://coding-academy.org/books-photos/${i + 1}.jpg`,
+            language: "en",
+            listPrice: {
+                amount: utilService.getRandomIntInclusive(80, 500),
+                currencyCode: "EUR",
+                isOnSale: Math.random() > 0.7
+            }
+        };
+        books.push(book);
         utilService.saveToStorage(BOOK_KEY, books)
     }
+
+    console.log('books', books);
 }
 
-function _createBook(title, price = 50) {
-    const book = getEmptyBook(title, price)
-    book.id = utilService.makeId()
-    return book
-}
+
+// function _createBook(title, price = 50) {
+//     const book = getEmptyBook(title, price)
+//     book.id = utilService.makeId()
+//     return book
+// }
 
 function _setNextPrevBookId(book) {
     return storageService.query(BOOK_KEY).then((books) => {
