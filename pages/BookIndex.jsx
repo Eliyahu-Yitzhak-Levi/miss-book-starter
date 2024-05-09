@@ -1,5 +1,9 @@
-const { useState, useEffect } = React
 
+const { useState, useEffect } = React
+const { Link } = ReactRouterDOM
+
+import { BookFilter } from "../cmps/BookFilter.jsx"
+import { BookList } from "../cmps/BookList.jsx"
 import { bookService } from "../services/book.service.js"
 
 
@@ -8,35 +12,39 @@ export function BookIndex() {
 
     const [books, setBooks] = useState([])
 
+    const [filterBy, setFilterBy] = useState(bookService.getDefaultFilter())
+
+
+
     useEffect(() => {
-        bookService.query()
+        bookService.query(filterBy)
             .then(books => {
-                console.log(books);
                 setBooks(books)
             })
-    }, [])
+    }, [filterBy])
+
+
+
+    function setNewFilterBy(newFilter) {
+        setFilterBy(newFilter)
+    }
+
+
 
     return (
         <section className='book-index'>
             <h1>Books</h1>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Price</th>
-                        <th>Author</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {books.map((book, index) => (
-                        <tr key={index}>
-                            <td>{book.title}</td>
-                            <td>{book.listPrice.amount} {book.listPrice.currencyCode}</td>
-                            <td>{book.authors.join(', ')}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </section>
+            <Link to="/book/edit"><button>Add a book</button></Link>
+            <BookFilter filterBy={filterBy} onFilter={setNewFilterBy}></BookFilter>
+            <div className="table-headers">
+                <span>Title</span>
+                <span>Price</span>
+                <span>Author</span>
+            </div>
+
+            <BookList books={books} ></BookList>
+
+
+        </section >
     )
 }

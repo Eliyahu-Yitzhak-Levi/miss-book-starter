@@ -12,27 +12,35 @@ export const bookService = {
     getEmptyBook,
     getDefaultFilter,
     getPriceStats,
-    getCategoryStats
+    getCategoryStats,
+    getBook,
+    addReview,
 }
 // For Debug (easy access from console):
-// window.bs = bookService
+window.bs = bookService
 
 function query(filterBy = {}) {
-    console.log(storageService.query(BOOK_KEY));
     return storageService.query(BOOK_KEY)
         .then(books => {
-            if (filterBy.txt) {
-                const regExp = new RegExp(filterBy.txt, 'i')
+            if (filterBy.title) {
+                const regExp = new RegExp(filterBy.title, 'i')
                 books = books.filter(book => regExp.test(book.title))
             }
-
             if (filterBy.minPrice) {
-                books = books.filter(book => book.price >= filterBy.minPrice)
+                books = books.filter(book => book.listPrice.amount >= filterBy.minPrice)
             }
-
             return books
         })
 }
+
+function getBook(bookId) {
+    return storageService.get(BOOK_KEY, bookId)
+        .then(book => {
+            console.log(book);
+            return book
+        })
+}
+
 
 function get(bookId) {
     return storageService.get(BOOK_KEY, bookId)
@@ -48,18 +56,41 @@ function remove(bookId) {
 
 function save(book) {
     if (book.id) {
+        console.log('putting book', book);
         return storageService.put(BOOK_KEY, book)
     } else {
+        console.log('posting book', book);
         return storageService.post(BOOK_KEY, book)
     }
 }
 
-function getEmptyBook(title = '', price = '') {
-    return { title, price }
+function getEmptyBook() {
+    const categories = ['Fiction', 'Nonfiction', 'Science Fiction', 'Fantasy', 'Mystery', 'Thriller', 'Romance', 'Horror'];
+
+    const emptyBook = {
+        id: null,
+        title: utilService.makeLorem(2),
+        subtitle: utilService.makeLorem(4),
+        authors: [utilService.makeLorem(1)],
+        publishedDate: utilService.getRandomIntInclusive(1950, 2024),
+        description: utilService.makeLorem(20),
+        pageCount: utilService.getRandomIntInclusive(20, 600),
+        categories: [categories[utilService.getRandomIntInclusive(0, categories.length - 1)]],
+        thumbnail: `http://coding-academy.org/books-photos/${Math.floor(Math.random() * 10) + 1}.jpg`,
+        language: "en",
+        reviews: [],
+        listPrice: {
+            amount: utilService.getRandomIntInclusive(80, 500),
+            currencyCode: "EUR",
+            isOnSale: Math.random() > 0.7
+        }
+    }
+
+    return emptyBook
 }
 
-function getDefaultFilter(filterBy = { txt: '', minPrice: 0 }) {
-    return { txt: filterBy.txt, minPrice: filterBy.minPrice }
+function getDefaultFilter(filterBy = { title: '', minPrice: 0 }) {
+    return { title: filterBy.title, minPrice: filterBy.minPrice }
 }
 
 function getPriceStats() {
@@ -86,11 +117,21 @@ function getCategoryStats() {
         })
 }
 
-function _createBooks() {
-    const categories = ['Love', 'Fiction', 'Poetry', 'Computers', 'Religion'];
-    const books = [];
 
-    for (let i = 0; i < 3; i++) { //makes 3 books
+function addReview(bookId, review) {
+    wantedBook = storageService.get(BOOK_KEY, bookId)
+    wantedBook.reviews.push(review)
+    storageService.post(BOOK_KEY, book)
+}
+
+
+function _createBooks() {
+
+    const categories = ['Love', 'Fiction', 'Poetry', 'Computers', 'Religion']
+    const books = []
+
+
+    for (let i = 0; i < 3; i++) {
         const book = {
             id: utilService.makeId(),
             title: utilService.makeLorem(2),
@@ -102,17 +143,16 @@ function _createBooks() {
             categories: [categories[utilService.getRandomIntInclusive(0, categories.length - 1)]],
             thumbnail: `http://coding-academy.org/books-photos/${i + 1}.jpg`,
             language: "en",
+            reviews: [],
             listPrice: {
                 amount: utilService.getRandomIntInclusive(80, 500),
                 currencyCode: "EUR",
                 isOnSale: Math.random() > 0.7
             }
-        };
-        books.push(book);
+        }
+        books.push(book)
         utilService.saveToStorage(BOOK_KEY, books)
     }
-
-    console.log('books', books);
 }
 
 

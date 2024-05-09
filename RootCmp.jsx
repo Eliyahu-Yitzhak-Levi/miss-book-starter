@@ -1,29 +1,31 @@
+const { Route, Routes } = ReactRouterDOM
+const Router = ReactRouterDOM.HashRouter
+
 import { BookIndex } from "./pages/BookIndex.jsx"
 import { About } from "./pages/About.jsx"
 import { Home } from "./pages/Home.jsx"
+import { AppHeader } from "./cmps/AppHeader.jsx"
+import { BookDetails } from "./pages/BookDetails.jsx"
+import { AddReview } from "./cmps/AddReview.jsx"
+import { EditBook } from "./cmps/EditBook.jsx"
 
-const { useState } = React
+
 
 export function RootCmp() {
-
-    const [route, setRoute] = useState('Home')
-
     return (
-        <React.Fragment>
-            <header>
-                <h1>{route}</h1>
-                <nav>
-                    <a onClick={() => setRoute('Home')} href="#">Home</a>
-                    <a onClick={() => setRoute('About')} href="#">About</a>
-                    <a onClick={() => setRoute('Books')} href="#">Books</a>
-                </nav>
-            </header>
-
+        <Router>
+            <AppHeader />
             <main className="content-grid">
-                {route === 'Home' && <Home />}
-                {route === 'Books' && <BookIndex />}
-                {route === 'About' && <About />}
+                <Routes>
+                    <Route path="/" element={<Home />}></Route>
+                    <Route path="/book" element={<BookIndex />}></Route>
+                    <Route path="/about" element={<About />}></Route>
+                    <Route path="/book/:bookId" element={<BookDetails />}></Route>
+                    <Route path="/book/review" element={<AddReview />}></Route>
+                    <Route path="/book/edit" element={<EditBook />}></Route>
+                    <Route path="/book/edit/:bookId" element={<EditBook />}></Route>
+                </Routes>
             </main>
-        </React.Fragment>
+        </Router>
     )
 }
