@@ -11,10 +11,12 @@ export const bookService = {
     save,
     getEmptyBook,
     getDefaultFilter,
+    getDefaultFilterGoogle,
     getPriceStats,
     getCategoryStats,
     getBook,
     addReview,
+    getEmptyReview
 }
 // For Debug (easy access from console):
 window.bs = bookService
@@ -36,7 +38,7 @@ function query(filterBy = {}) {
 function getBook(bookId) {
     return storageService.get(BOOK_KEY, bookId)
         .then(book => {
-            console.log(book);
+            // console.log(book);
             return book
         })
 }
@@ -56,10 +58,10 @@ function remove(bookId) {
 
 function save(book) {
     if (book.id) {
-        console.log('putting book', book);
+        // console.log('putting book', book);
         return storageService.put(BOOK_KEY, book)
     } else {
-        console.log('posting book', book);
+        // console.log('posting book', book);
         return storageService.post(BOOK_KEY, book)
     }
 }
@@ -93,6 +95,11 @@ function getDefaultFilter(filterBy = { title: '', minPrice: 0 }) {
     return { title: filterBy.title, minPrice: filterBy.minPrice }
 }
 
+function getDefaultFilterGoogle(filterBy = { search: '' }) {
+    return { search: filterBy.search }
+}
+
+
 function getPriceStats() {
     return storageService.query(BOOK_KEY)
         .then(books => {
@@ -118,10 +125,25 @@ function getCategoryStats() {
 }
 
 
-function addReview(bookId, review) {
-    wantedBook = storageService.get(BOOK_KEY, bookId)
-    wantedBook.reviews.push(review)
-    storageService.post(BOOK_KEY, book)
+function addReview(book) {
+    console.log('the review is being added to book : ', book);
+    return storageService.put(BOOK_KEY, book)
+        .then((book) => {
+            console.log('adding review...');
+            console.log(book)
+        })
+}
+
+
+
+function getEmptyReview() {
+    return {
+        id: utilService.makeId(),
+        name: utilService.makeLorem(5),
+        reviewPublishDate: utilService.getRandomIntInclusive(1950, 2024),
+        review: utilService.makeLorem(25),
+        rating: utilService.getRandomIntInclusive(1, 5)
+    }
 }
 
 
@@ -143,7 +165,7 @@ function _createBooks() {
             categories: [categories[utilService.getRandomIntInclusive(0, categories.length - 1)]],
             thumbnail: `http://coding-academy.org/books-photos/${i + 1}.jpg`,
             language: "en",
-            reviews: [],
+            reviews: [getEmptyReview(), getEmptyReview(), getEmptyReview()],
             listPrice: {
                 amount: utilService.getRandomIntInclusive(80, 500),
                 currencyCode: "EUR",

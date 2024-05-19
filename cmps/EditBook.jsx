@@ -4,38 +4,40 @@ import { bookService } from "../services/book.service.js"
 
 
 export function EditBook() {
-    const params = useParams();
-    const navigate = useNavigate();
-    const [book, setBook] = useState(null);
+    const params = useParams()
+    const navigate = useNavigate()
+    const [book, setBook] = useState(null)
 
+    console.log(params)
+    
     useEffect(() => {
         if (!params.bookId) {
-            console.log('adding');
+            console.log('adding')
             // If params.bookId is not present, initialize with empty book
-            const emptyBook = bookService.getEmptyBook();
-            setBook(emptyBook);
+            const emptyBook = bookService.getEmptyBook()
+            setBook(emptyBook)
         } else {
             // If params has bookId, fetch the book details
             bookService.getBook(params.bookId)
                 .then(res => {
-                    console.log(res);
-                    setBook(res);
+                    console.log(res)
+                    setBook(res)
                 })
                 .catch(error => {
-                    console.error('Error fetching book:', error);
+                    console.error('Error fetching book:', error)
                     // If book is not found, navigate to book list
-                    navigate('/book');
-                });
+                    navigate('/book')
+                })
         }
-    }, [params]);
+    }, [params])
 
-    console.log(book);
+    console.log(book)
 
     function onSave(ev) {
-        ev.preventDefault();
-        console.log(book);
+        ev.preventDefault()
+        console.log(book)
         bookService.save(book)
-            .then(() => navigate('/book'));
+            .then(() => navigate('/book'))
     }
 
 

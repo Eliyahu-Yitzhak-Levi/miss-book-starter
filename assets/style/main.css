@@ -9,3 +9,7 @@
 
 /* Components */
 @import url(cmps/BookIndex.css);
+@import url(cmps/BookDetails.css);
+
+/* dynamic-inputs */
+@import url(dynamic-inputs/StarsRating.css);

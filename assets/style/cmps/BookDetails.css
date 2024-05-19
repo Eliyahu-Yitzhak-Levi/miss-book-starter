@@ -1,0 +1,29 @@
+.reviews-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.review-item {
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.review-name {
+    font-weight: bold;
+}
+
+.review-date {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.review-content {
+    margin-top: 5px;
+}
+
+.review-rating {
+    margin-top: 5px;
+    font-style: italic;
+}

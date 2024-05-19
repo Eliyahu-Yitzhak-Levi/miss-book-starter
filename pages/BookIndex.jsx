@@ -35,6 +35,7 @@ export function BookIndex() {
         <section className='book-index'>
             <h1>Books</h1>
             <Link to="/book/edit"><button>Add a book</button></Link>
+            <Link to="/book/addGoogle"><button>Add a book from google</button></Link>
             <BookFilter filterBy={filterBy} onFilter={setNewFilterBy}></BookFilter>
             <div className="table-headers">
                 <span>Title</span>
@@ -43,8 +44,6 @@ export function BookIndex() {
             </div>
 
             <BookList books={books} ></BookList>
-
-
         </section >
     )
-}
+} 
